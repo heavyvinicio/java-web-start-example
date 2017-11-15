@@ -3,42 +3,26 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>test</groupId>
-	<artifactId>test-web-jnlp</artifactId>
-	<version>1.0</version>
+	<groupId>tdd</groupId>
+	<artifactId>test-web</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>test-swing</name>
-	<url>${url.ambiente}</url>
-	<description>Tests de jnlp.</description>
+	<name>test-web</name>
 
 	<properties>
-		<!-- *********************** NO MODIFICAR ********************** -->
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- TAREAS DE CONTRUCCION -->
-		<jnlp.directorio.recursos>resources/aplicaciones</jnlp.directorio.recursos>
-		<jnlp.directorio.codebase>${url.ambiente}/${jnlp.directorio.recursos}</jnlp.directorio.codebase>
-		<jnlp.ubicacion.plantilla>src/main/java/ec/test/plantilla</jnlp.ubicacion.plantilla>
-		<war.nombre>${project.artifactId}-${project.version}</war.nombre>
-		<war.ruta.recursos>${project.build.directory}/${war.nombre}/${jnlp.directorio.recursos}</war.ruta.recursos>
-		<!-- ******************************************************************* -->
-
-		<!-- DESCOMENTAR PARA AMBIENTE DE DESARROLLO -->
-		<ambiente>desarrollo</ambiente>
-		<url.ambiente>http://localhost:8080/test-web-jnlp</url.ambiente>
-
-		
-		<!-- GESTION DE KEYSTORE PARA PREPRODUCCION Y PRODUCCION -->
-		<keystore.directorio.keystore>ruta_certificado</keystore.directorio.keystore>
-		<keystore.clave>clave</keystore.clave>
-		<keystroe.clave.certificado>clave</keystroe.clave.certificado>
-		<!-- NO MODIFICAR DEJAR TAL CUAL POR FAVOR -->
-		<keystore.nombre>keystore.jks</keystore.nombre>
-		<keystore.ruta>${keystore.directorio.keystore}/${keystore.nombre}</keystore.ruta>
-		<keystore.certificado.alias>alias-certificado</keystore.certificado.alias>
-		<!-- ******************************************************* -->
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -87,157 +71,56 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- configuracion para webstart -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>webstart-maven-plugin</artifactId>
-
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>webstart-pack200-impl</artifactId>
-						<version>1.0-beta-6</version>
-					</dependency>
-					<dependency>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>keytool-api-1.7</artifactId>
-						<version>1.5</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>jnlp-download-servlet</goal>
-						</goals>
-
-					</execution>
-				</executions>
-
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<version>1.6.5</version>
 				<configuration>
-					<codebase>${jnlp.directorio.codebase}/</codebase>
-					<templateDirectory>${jnlp.ubicacion.plantilla}</templateDirectory>
-					<outputDirectoryName>${jnlp.directorio.recursos}</outputDirectoryName>
-					<jnlpFiles>
-						<jnlpFile>
-							<inputTemplate>plantilla.vm</inputTemplate>
-							<outputFilename>lanzador.jnlp</outputFilename>
-							<jarResources>
-								<jarResource>
-									<groupId>test</groupId>
-									<artifactId>app-swing</artifactId>
-									<version>1.0</version>
-									<mainClass>ec.test.Pincipal</mainClass>
-								</jarResource>
-								
-							</jarResources>
-						</jnlpFile>
-					</jnlpFiles>
+					<container>
+						<containerId>glassfish4x</containerId>
+						<type>remote</type>
+					</container>
+					<configuration>
+						<type>runtime</type>
+						<properties>
 
-					<!-- DESCOMENTAR PARA PRE Y PRODUCCION -->
-					<sign>
-						<keystore>${keystore.ruta}</keystore>
-						<keypass>${keystroe.clave.certificado}</keypass>
-						<storepass>${keystore.clave}</storepass>
-						<alias>${keystore.certificado.alias}</alias>
-						<keystoreConfig>
-							<delete>false</delete>
-						</keystoreConfig>
-						<verify>true</verify>
-					</sign>
-					<!-- FIN DESCOMENTADO PARA PRE Y PRODUCCION -->
-
-					<!-- DESCOMENTAR PARA DESARROLLO -->
-					<!-- <sign> -->
-					<!-- <keystore>${project.build.directory}/keyStore</keystore> -->
-					<!-- <keypass>keystore</keypass> -->
-					<!-- <storepass>123456789</storepass> -->
-					<!-- <alias>cert-jnlp</alias> -->
-					<!-- <validity>365</validity> -->
-					<!-- <dnameCn>localhost</dnameCn> -->
-					<!-- <dnameOu>test</dnameOu> -->
-					<!-- <dnameO>test</dnameO> -->
-					<!-- <dnameL>Quito</dnameL> -->
-					<!-- <dnameSt>Pichincha</dnameSt> -->
-					<!-- <dnameC>Ec</dnameC> -->
-					<!-- <verify>true</verify> -->
-					<!-- <keystoreConfig> -->
-					<!-- <delete>true</delete> -->
-					<!-- <gen>true</gen> -->
-					<!-- </keystoreConfig> -->
-					<!-- </sign> -->
-
-					<!-- FIN DE COMENTARIO PARA DESARROLLO -->
-
-					<encoding>utf-8</encoding>
-					<verbose>true</verbose>
-					<updateManifestEntries>
-						<Application-Name>app-swing</Application-Name>
-						<Trusted-Library>true</Trusted-Library>
-						<Permissions>all-permissions</Permissions>
-						<Codebase>*</Codebase>
-						<Trusted-Only>false</Trusted-Only>
-					</updateManifestEntries>
-					<unsign>true</unsign>
-					<gzip>true</gzip>
-					<pack200>
-						<enabled>true</enabled>
-					</pack200>
-					<outputJarVersions>true</outputJarVersions>
-					<verifyjar>true</verifyjar>
-					<excludeTransitive>false</excludeTransitive>
+							<cargo.hostname>localhost</cargo.hostname>
+							<cargo.remote.username>admin</cargo.remote.username>
+							<cargo.remote.password>admin</cargo.remote.password>
+							<cargo.glassfish.admin.port>42766</cargo.glassfish.admin.port>
+							<cargo.glassfish.domain.name>/${project.artifactId}</cargo.glassfish.domain.name>
+						</properties>
+					</configuration>
+					<daemon>
+						<properties>
+							<cargo.daemon.handleid>test1</cargo.daemon.handleid>
+							<cargo.daemon.url>http://localhost:18000/</cargo.daemon.url>
+							<cargo.daemon.username>admin</cargo.daemon.username>
+							<cargo.daemon.password>admin</cargo.daemon.password>
+						</properties>
+					</daemon>
+					<deployables>
+						<deployable>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<type>war</type>
+							<properties>
+								<context>/${project.artifactId}</context>
+							</properties>
+						</deployable>
+					</deployables>
 				</configuration>
-			</plugin>
+				<dependencies>
 
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<configuration>
-							<target name="Renombrado de recursos">
-								<echo message="RENOMBRADO DE VERSIONES" />
-								<move
-									file="${war.ruta.recursos}/dependencia.jar"
-									tofile="${war.ruta.recursos}/dependencia__V1.0.jar" />
-								<move
-									file="${war.ruta.recursos}/dependencia.jar.pack.gz"
-									tofile="${war.ruta.recursos}/dependencia__V1.0.jar.pack.gz" />
+					<dependency>
+						<groupId>org.glassfish.main.deployment</groupId>
+						<artifactId>deployment-client</artifactId>
+						<version>4.1</version>
+					</dependency>
 
-												
-
-								
-								<echo message="AGREGACIONES DE LAS VERSIONES AL ARCHIVO VERSIONS.XML" />
-
-								<replace file="${war.ruta.recursos}/version.xml">
-									<replacefilter token="app-swing-1.0.jar"
-										value="app-swingl__V1.0.jar" />
-
-									<replacefilter token="dependencia-1.0.jar"
-										value="dependencia__V1.0.jar" />
-									
-								</replace>
-
-								<echo message="AGREGACIONES DE LAZY A LOS COMPONENTES" />
-								<replace file="${war.ruta.recursos}/lanzador.jnlp">
-									<replacetoken><![CDATA[href="dependencia.jar"  version="1.0"]]></replacetoken>
-									<replacevalue><![CDATA[href="dependencia.jar"  version="1.0"  download="lazy"]]></replacevalue>
-								</replace>
-								
-								
-							</target>
-
-						</configuration>
-
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
+				</dependencies>
 			</plugin>
 		</plugins>
-
 	</build>
-	
+
 </project>
